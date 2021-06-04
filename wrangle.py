@@ -100,3 +100,44 @@ def telco_split(df):
 def wrangle_telco(df):
     df = clean_data(get_telco_data())
     return telco_split (df)
+
+
+
+
+def get_zillow_data():
+    '''
+    This function reads in Zillow data from CodeUp db and creates a dataframe
+    '''
+    zillow_query = '''SELECT bedroomcnt, bathroomcnt, calculatedfinishedsquarefeet, taxvaluedollarcnt, yearbuilt, taxamount, fips 
+    FROM properties_2016 
+    WHERE propertylandusetypeid = 261;'''
+    return pd.read_sql(zillow_query, get_connection('zillow'))
+     
+
+
+
+def wrangle_zillow(df):
+    '''
+    Looks for existing zillow csv file and loads if present,
+    otherwise runs new_zillow_data function to acquire data. Cleans nulls in zilllow dataframe
+    '''
+    
+    # checks for existing file and loads
+    if os.path.isfile('zillow.csv'):
+        
+        df = pd.read_csv('zillow.csv', index_col=0)
+        
+    else:
+        
+        # pull in data and creates csv file if not already present
+        df = get_zillow_data()
+        
+        df.to_csv('zillow.csv')
+        
+    # replace symbols, etc with NaN's
+    df = df.replace(r'^\s*$', np.nan, regex=True)
+    
+    # drop nulls
+    df = df.dropna()
+        
+    return df
