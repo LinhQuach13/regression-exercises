@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 import os
@@ -60,7 +59,7 @@ def get_telco_data(cached=False):
         
     return df
 
-def telco_two_year(df):
+def telco_two_year():
     query= "Select customer_id, monthly_charges, tenure, total_charges FROM customers JOIN contract_types USING(contract_type_id) JOIN internet_service_types USING(internet_service_type_id)JOIN payment_types USING(payment_type_id) WHERE `contract_type_id` = '3';"
     df= pd.read_sql(query, get_connection('telco_churn'))
     return df
@@ -68,7 +67,7 @@ def telco_two_year(df):
 
 
 
-def clean_data(df):
+def clean_telco_data(df):
     '''
     This function take in the telco dataframe created and clean the total charges column
     by add a 0 to all empty columns and change the column to a float datatype.
@@ -97,14 +96,19 @@ def telco_split(df):
 
 
 
-def wrangle_telco(df):
-    df = clean_data(get_telco_data())
+def wrangle_telco():
+    df = clean_telco_data(get_telco_data())
     return telco_split (df)
 
 
 
+def wrangle_telco_two_year():
+    df = clean_telco_data(telco_two_year())
+    return telco_split (df)
 
-def get_zillow_data():
+
+
+def new_zillow_data():
     '''
     This function reads in Zillow data from CodeUp db and creates a dataframe
     '''
@@ -113,7 +117,28 @@ def get_zillow_data():
     WHERE propertylandusetypeid = 261;'''
     return pd.read_sql(zillow_query, get_connection('zillow'))
      
-
+    
+    
+def get_zillow_data(cached=False):
+    '''
+    This function reads in zillow data from Codeup database and writes data to
+    a csv file if cached == False or if cached == True reads in telco df from
+    a csv file, returns df.
+    '''
+    if cached == False or os.path.isfile('zillow.csv') == False:
+        
+        # Read fresh data from db into a DataFrame.
+        df = new_telco_data()
+        
+        # Write DataFrame to a csv file.
+        df.to_csv('zillow.csv')
+        
+    else:
+        
+        # If csv file exists or cached == True, read in data from csv.
+        df = pd.read_csv('zillow3.csv', index_col=0)
+        
+    return df
 
 
 def wrangle_zillow(df):
@@ -121,18 +146,6 @@ def wrangle_zillow(df):
     Looks for existing zillow csv file and loads if present,
     otherwise runs new_zillow_data function to acquire data. Cleans nulls in zilllow dataframe
     '''
-    
-    # checks for existing file and loads
-    if os.path.isfile('zillow.csv'):
-        
-        df = pd.read_csv('zillow.csv', index_col=0)
-        
-    else:
-        
-        # pull in data and creates csv file if not already present
-        df = get_zillow_data()
-        
-        df.to_csv('zillow.csv')
         
     # replace symbols, etc with NaN's
     df = df.replace(r'^\s*$', np.nan, regex=True)
