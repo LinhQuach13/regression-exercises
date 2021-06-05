@@ -136,7 +136,7 @@ def get_zillow_data(cached=False):
     else:
         
         # If csv file exists or cached == True, read in data from csv.
-        df = pd.read_csv('zillow3.csv', index_col=0)
+        df = pd.read_csv('zillow.csv', index_col=0)
         
     return df
 
