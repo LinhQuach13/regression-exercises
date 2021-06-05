@@ -59,6 +59,9 @@ def get_telco_data(cached=False):
         
     return df
 
+
+
+
 def telco_two_year():
     query= "Select customer_id, monthly_charges, tenure, total_charges FROM customers JOIN contract_types USING(contract_type_id) JOIN internet_service_types USING(internet_service_type_id)JOIN payment_types USING(payment_type_id) WHERE `contract_type_id` = '3';"
     df= pd.read_sql(query, get_connection('telco_churn'))
@@ -102,9 +105,11 @@ def wrangle_telco():
 
 
 
+
 def wrangle_telco_two_year():
     df = clean_telco_data(telco_two_year())
     return telco_split (df)
+
 
 
 def scaler_telco():
@@ -126,7 +131,7 @@ def scaler_telco():
 
 
 
-################################################Zillow Data###############################################################################
+################################# Zillow Data #########################################
 def new_zillow_data():
     '''
     This function reads in Zillow data from CodeUp db and creates a dataframe
@@ -138,26 +143,26 @@ def new_zillow_data():
      
     
     
-def get_zillow_data(df):
+def get_zillow_data(cached=False):
     '''
     This function reads in zillow data from Codeup database and writes data to
     a csv file if cached == False or if cached == True reads in telco df from
     a csv file, returns df.
     '''
-    
-    # checks for existing file and loads
-    if os.path.isfile('zillow.csv'):
+    if cached == False or os.path.isfile('zillow.csv') == False:
         
-        df = pd.read_csv('zillow.csv', index_col=0)
+        # Read fresh data from db into a DataFrame.
+        df = new_telco_data()
+        
+        # Write DataFrame to a csv file.
+        df.to_csv('zillow.csv')
         
     else:
         
-        # pull in data and creates csv file if not already present
-        df = get_zillow_data()
+        # If csv file exists or cached == True, read in data from csv.
+        df = pd.read_csv('zillow.csv', index_col=0)
         
-        df.to_csv('zillow.csv')
-        
-        return df
+    return df
         
 
 
