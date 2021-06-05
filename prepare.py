@@ -152,7 +152,7 @@ def get_zillow_data(cached=False):
     if cached == False or os.path.isfile('zillow.csv') == False:
         
         # Read fresh data from db into a DataFrame.
-        df = new_telco_data()
+        df = new_zillow_data()
         
         # Write DataFrame to a csv file.
         df.to_csv('zillow.csv')
