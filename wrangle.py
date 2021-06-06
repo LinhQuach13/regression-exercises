@@ -16,6 +16,9 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, MinMaxScaler
 
 
+
+#################################################### Telco Churn ###########################################################################
+
 # Create helper function to get the necessary connection url.
 def get_connection(db, user=user, host=host, password=password):
     '''
@@ -108,6 +111,8 @@ def wrangle_telco_two_year():
 
 
 
+
+#################################################### Zillow Data ########################################################################
 def new_zillow_data():
     '''
     This function reads in Zillow data from CodeUp db and creates a dataframe
